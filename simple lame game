@@ -1,0 +1,13 @@
+from ipywidgets import *
+from random import *
+btn_zero = Button (description = '0')
+btn_one = Button ( description = '1')
+btns = HBox([ btn_zero, btn_one ])
+btns
+def click_zero(b):
+ update_game(0)
+btn_zero.on_click( click_zero)
+ update_game(0)
+btn_zero.on_click( click_zero)
+usr_score = IntProgress ( value = 0)
+def update 

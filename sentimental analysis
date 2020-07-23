@@ -1,0 +1,37 @@
+import pandas as pd
+
+df = pd.read_csv('L:\\new pands\\Combined_News_DJIA.csv', encoding = "ISO-8859-1")
+
+df.head()
+
+train = df[df['Date'] < '20150101']
+test = df[df['Date'] > '20141231' ]
+
+#removing punchuations
+data=train.iloc[:,2:27]
+data.replace ("[^a-zA-Z]"," ",regex = True, inplace = True )
+
+#renaming columns for easy access
+list1 = [i for i in range (25)]
+new_index = [str(i) for i in list1]
+data.columns = new_index
+data.head()
+
+#convert into lower case 
+for index in new_index:
+    data[index] = data[index].str.lower()
+data.head#text preprocessing
+
+#combine datalines
+' '.join(str(x)for x in data.iloc[1,2:27])#the first row is taken and combining with the columns wut a space
+
+#itrating process
+headlines = []
+for row in range (0,len(data.index)):
+    headlines.append(' '.join(str(x)for x in data.iloc[row,0:25]))
+
+headlines[0]
+
+## countvectorizer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.ensmble import RandomForestClassifier

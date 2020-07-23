@@ -1,0 +1,122 @@
+import pandas as pd
+import os
+import glob
+os.chdir("L:\\new pands\\Pandas-Data-Science-Tasks-master\\SalesAnalysis\\Sales_Data")
+
+# merging multiple data
+
+extension = 'csv'
+all_filenames = [i for i in glob.glob('*.{}'.format(extension))]
+combined_csv = pd.concat([pd.read_csv(f) for f in all_filenames ])
+#export to csv
+combined_csv.to_csv( "combined_csv.csv", index=False, encoding='utf-8-sig')
+
+all_data =pd.read_csv('combined_csv.csv')
+all_data.head()
+
+# as we are having an error with the NaN let's clean up !
+
+Nan_df = all_data[all_data.isna().any(axis=1)]
+Nan_df.head()
+all_data = all_data.dropna(how = 'all')
+all_data
+
+# delete 'Or' and drop it 
+
+all_data = all_data[all_data['Order Date'].str[0:2] != 'Or']
+all_data.tail()
+
+## convert columns into crt type
+
+# argument data with additional columns
+# Task 1 
+# add moth c0lumn
+
+all_data['Quantity Ordered'] = pd.to_numeric(all_data['Quantity Ordered'])
+all_data['Price Each'] = pd.to_numeric(all_data['Price Each'])
+
+all_data['Month'] = all_data['Order Date'].str[0:2]
+all_data['Month'] = all_data['Month'].astype('int32')
+all_data.head()
+
+all_data['Sales'] = all_data['Quantity Ordered'] * all_data['Price Each']
+all_data.head()
+
+# adding city column
+
+
+#as we need the city names we can see that the cities up there is under the spilt of commas so spilt it by axis x
+#we can also use this def method but mostly for a certain amount of data set
+#powerful code,custom funtion is not efficient for large data
+def get_city(address):
+    return address.split(',')[1]
+def get_state(address):
+    return address.split(',')[2].split(' ')[1]#now spilt the zip code cuz we don't need numeric
+
+all_data['city']=all_data['Purchase Address'].apply(lambda x: f"{get_city(x)} ( {get_state(x)})")
+#all_data['city']=all_data['Purchase Address'].apply(lambda x: x.split(',')[1])
+#we saying that to split the each cell by the x axis and grab the first index eg:0,1,2
+all_data.head()
+
+# analysis question no 1 
+# which month has the best sale?and how much is earned in a month?
+
+all_data.groupby('Month').sum()['Sales']
+
+result = all_data.groupby('Month').sum()['Sales']
+result
+
+import matplotlib.pyplot as plt
+months =range (1,13)
+plt.bar(months, result)
+plt.xticks(months)
+plt.ylabel('Sales in USD ($)')
+plt.xlabel('Month number')
+plt.show()
+
+# what city had the highest no . of sales
+
+result = all_data.groupby('city').sum()
+result
+
+import matplotlib.pyplot as plt
+cities =[city for city, df in all_data.groupby('city')]
+plt.bar(cities, result['Sales'])
+plt.xticks(cities, rotation='vertical',size=8)
+plt.ylabel('Sales in USD ($)')
+plt.xlabel('city name')
+plt.show()
+
+# at what time should we AD, to make  customers like hood
+
+all_data['Order Date'] = pd.to_datetime(all_data['Order Date'])
+
+all_data['Hour'] = all_data['Order Date'].dt.hour
+all_data['minute'] = all_data['Order Date'].dt.minute
+all_data.head()
+
+
+hours = [hour for hour, df in all_data.groupby('Hour')] 
+plt.plot(hours, all_data.groupby(['Hour']).count())
+plt.xticks(hours)
+plt.xlabel('Hour')
+plt.ylabel('No of orders')
+plt.grid()
+plt.show()
+
+# which product is often sold together
+
+df = all_data[all_data['Order ID'].duplicated(keep=False)]
+df['Grouped'] = df.groupby('Order ID')['Product'].transform(lambda x: ','.join(x))
+df = df[['Order ID','Grouped']].drop_duplicates()
+df.head(26)
+
+import import_ipynb
+from itertools import combinations
+from collections import counter
+
+count = counter()
+for row in df['Grouped']:
+    row_list =row.split(',')
+    count.update(counter(combination(row_list, 2)))
+    print (count)

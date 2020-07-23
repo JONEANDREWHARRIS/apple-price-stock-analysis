@@ -1,0 +1,21 @@
+import pandas as pd
+
+df =pd.read_csv('C:\\Users\\shiny\\Desktop\\project papers\\pokemon_data.txt','\t')
+#print(df[['Name', 'Type1', 'HP']])
+#print(df.iloc[667,1])
+#for index, row in df.iterrows():
+#    print(index, row)
+#df.loc[df['Type 1'] == "Flying"]
+df.describe()
+#df.sort_values('Name',ascending=False)
+#df.sort_values(['Type 1', 'HP'], ascending=[1,0])
+
+
+#df['Total'] = df['HP'] + df['Attack'] + df['Defense'] + df['Sp. Atk'] + df['Sp. Def'] + df['Speed']
+#df = df.drop(columns=['Total'])
+df['Total'] = df.iloc[:, 4:10].sum(axis=1)
+cols = list(df.columns)
+df = df[cols[0:4] + [cols[-1]]+cols[4:12]]
+df.head(5)
+
+df.to_csv('pandas55.csv')

@@ -1,0 +1,179 @@
+import requests
+from bs4 import BeautifulSoup as bs
+
+https://www.youtube.com/redirect?q=https%3A%2F%2Fwww.w3schools.com%2Fcssref%2Fcss_selectors.asp&v=GjKQ6V_ViQE&event=video_description&redir_token=QUFFLUhqa2FaQ3RBMng0V0pzeU9Pd3RqMkhWVEhweS1BUXxBQ3Jtc0ttekNKRmpPT2VTNkJnY0hqY3RtSm9xaXZ5UnVZVEZxaU5FNWstOXhqQVZ4YnVXVzZvQ1doTlhpQWIySXJHTVYwZTlEUE5lZk12UXVPdEdjeVI2MUdXX21MRmVTNjBMRHZBM0JEQU95aTlGazlqYm0xVQ%3D%3D
+
+## documentation
+
+https://www.youtube.com/redirect?q=https%3A%2F%2Fwww.crummy.com%2Fsoftware%2FBeautifulSoup%2Fbs4%2Fdoc%2F&v=GjKQ6V_ViQE&event=video_description&redir_token=QUFFLUhqbkFGYVdwWmphalhwSkFCeDl2YkZqb2ZnZS1zd3xBQ3Jtc0ttOFdtS1FiVFJCZnVlV0hZRGYtTUVYRkxJNDY3Ti1OVzJFai1EU1h0ekZIckg5VVB4Ym9VdnctUThUS2dGY3huUFhTYVRlMm43OXV4b2FESHFWVlFCbXBELWV0NlhNeHJlR0xEM213NWVuZTQ2ZXZDNA%3D%3D
+
+r = requests.get("https://keithgalli.github.io/web-scraping/example.html")
+
+soup = bs(r.content)
+
+print(soup.prettify())
+
+# start scraping
+
+### find find all
+
+
+first_header = soup.find('h2')
+first_header
+
+headers = soup.find_all('h2')
+headers
+
+# pass an list element to look for
+list_header = soup.find(['h1','h2'])
+list_header
+
+list_header2 = soup.find_all(['h1','h2'])
+list_header2
+
+paragraph = soup.find_all('p', attrs={'id':'paragraph-id'})
+paragraph
+
+body = soup.find('body')
+body
+
+div = body.find('div')
+div
+
+dive_header = div.find('h1')
+dive_header
+
+print(soup.prettify())
+
+soup.find_all('p',string = (some))#or else u can do this
+
+
+import re
+
+para = soup.find_all('p', string = re.compile('some'))
+para
+
+header3 =  soup.find_all('h2', string = re.compile('(h|H)eader'))
+header3
+
+# css selecting elements
+
+c = soup.select('p')
+c
+
+i = soup.select('div p')#only print paragraph inside div
+i
+
+soup.body
+
+paragraph2 =soup.select('h2 ~p')#p that are directly after h2
+paragraph2
+
+bold_text = soup.select('p#paragraph-id b')
+bold_text
+
+soup.select('title')
+
+para2 = soup.select('body > p')#body followed by a direct p element (p-paragraph)
+print(para2)
+
+for paragraph in para2:
+   print(para2.select('i'))
+
+soup.select("[align=middle]")
+
+## geting different propertites of HTML
+
+h3 = soup.find('h2')
+h3.string
+
+print(div.prettify())
+
+print(div.string)
+
+print(div.get_text())# if multiple element use get_text
+
+#getting specific property from the elment
+link = soup.find('a')
+link
+
+link['href']
+
+paragraphs
+
+paragraphs[0]
+
+paragraphs[1]
+
+paragraphs = soup.select('p#paragraph-id')
+paragraphs[0]['id']
+
+# code navigation
+
+soup.body
+
+soup.body.div
+
+soup.body.div.h1
+
+soup.body.div.h1.string
+
+## know the terms : paraents,siblings,child
+# in here the BODY is the parent of div and div is the child of the body 
+# and the elements of the same level are sibling for example:body and the narrow down div are sibling
+print(soup.body.prettify())
+
+soup.body.find('div').find_next_siblings()
+
+soup.body.find('h2').find_previous_siblings()
+
+soup.find('h1').find_parent()
+
+soup.find('div').find_parent()
+
+# excercise 1
+## task1 
+## find all links
+
+r2=requests.get('https://keithgalli.github.io/web-scraping/webpage.html')
+soup1 = bs(r2.content)
+print(soup1.prettify())
+
+soup1.select('a')
+
+links=soup1.select('ul.socials a')
+print(links)
+
+actual_links =[link['href'] for link in links]
+actual_links
+
+ulist = soup1.find("ul", attrs = {"class":"socials"})
+links = ulist.find_all("a")
+actual_links =[link['href'] for link in links]
+actual_links
+
+links = soup1.select("li.social a")
+actual_links =[link['href'] for link in links]
+actual_links
+
+# scrape table 
+
+soup1.select('tbody')
+
+soup1.select('table td')
+
+import pandas as pd
+table =soup1.select('table.hockey-stats')[0]
+columns = table.find('thead').find_all('th')
+column_names = [c.string for c in columns]
+table_rows = table.find('tbody').find_all('tr')
+l =[]
+for tr in table_rows:
+    td =tr.find_all('td')
+    row =[str(tr.get_text()).strip() for tr in td]
+    l.append(row)
+    print(l[0])
+
+
+df = pd.DataFrame(1, columns =column_names)
+df

@@ -1,0 +1,88 @@
+import pandas as pd
+
+df = pd.read_csv('C:\\Users\\shiny\\Desktop\\project papers\\pokemon_data.csv.txt')
+df
+
+
+#in case of data is not fully seen use falgs=re.I
+
+#saving  data 
+#df.to_csv('modified.csv', index = False)
+df.to_excel('modified.xlsx')
+#df.to_csv('modified.txt')
+#means the index line, which is very annoying by giving the worng index value
+
+# filtering data
+
+#filtering data
+df.loc[(df['Type 1'] == 'Grass') | (df['Type 2'] == 'Poision')]
+# | = or condition and we can also use & as and
+
+# filtering data
+
+new_df = df.loc[(df['Type 1'] == 'Grass') & (df['Type 2'] == 'Poision')|(df['HP'] > 90)]
+#new_df.head(26)
+#mega evolution is quiet annoying so take outthat
+#df.loc[~df['Name'].str.contains('Mega')]
+#df.head(36)
+new_df.reset_index(drop=True, inplace=True)
+new_df
+
+import matplotlib.pyplot as plt
+plt.plot([1,2,3,4,5], [1,2,3,4,10])
+plt.show()
+#JUST FUN 
+
+import re
+
+#df.loc[df['Type 1'].str.contains('Fire | Grass', flags=re.I, regex =True)]
+#^ - strat up with (meaning)
+df.loc[df['Name'].str.contains('^pi[a-z]*', flags=re.I, regex =True)]
+
+#conditional changes
+
+
+#make replcement fire as flamy or viceversa
+df.loc[df['Type 1'] == 'Flamy', 'Type 1'] = 'Fire'
+#make fire type are lengendary
+df.loc[df['Type 1'] == 'Fire', 'Legendary'] = True
+df
+
+old data set
+
+#df =pd.read_csv('modified.csv')
+#df.loc[df[Total] > 500, ['Generation', 'Legendary']] = 'TEST VALUE'
+#df.loc[df[Total] > 500, ['Generation', 'Legendary']] = ['TEST 1','TEST2'] 
+#df
+#this makes an error due to no csv source onn the system
+#or unknown error
+
+
+# aggregate statistics group by
+
+df =pd.read_csv('modified.csv')
+df.groupby(['Type 1']).mean().sort_values('HP', ascending=False)
+
+df.groupby(['Type 1']).sum()
+
+df.groupby(['Type 1', 'Type 2']).count()['count']\
+#can count repeated sort of things in a large data set
+
+
+df['count'] = 1
+df
+
+# working with large data base
+
+for df in pd.read_csv('modified.csv', chunksize=25):
+    print('CHUNK DF')
+    print(df)
+
+new_df = pd.DataFrame(columns=df.columns)
+for df in pd.read_csv('modified.csv', chunksize=25):
+    results = df.groupby(['Type 1']).count()
+    
+    new_df = pd.concat([new_df, results])
+    
+
+new_df

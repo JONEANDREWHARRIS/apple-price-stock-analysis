@@ -1,1 +1,1 @@
-# apple-price-stock-analysis
+first time with python
